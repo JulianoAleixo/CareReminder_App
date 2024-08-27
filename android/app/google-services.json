@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "665640661152",
+    "project_id": "carereminder-10bab",
+    "storage_bucket": "carereminder-10bab.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:665640661152:android:948fb850b9cad03f0999c5",
+        "android_client_info": {
+          "package_name": "com.julianoaleixo.carereminder"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAEeuYXv8-meyp1ACslr_jALYSksZmRcZ0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
