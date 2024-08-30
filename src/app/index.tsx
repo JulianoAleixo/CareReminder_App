@@ -15,6 +15,7 @@ import { Settings } from "./settings";
 import firestore from "@react-native-firebase/firestore";
 import { Loading } from "@/components/loading";
 import dayjs from "dayjs";
+import * as ExpoNotifications from "expo-notifications";
 
 export default function Index() {
     const [option, setOption] = useState<"home" | "history" | "settings">(
@@ -26,15 +27,10 @@ export default function Index() {
     const [nextDay, setNextDay] = useState<string>("N/A");
 
     useEffect(() => {
-        const interval = setInterval(() => {
-        }, 30000);
-        
-        if (option === "home") {
-            createTables();
-            getDataFromDatabase();
-        } 
-        
-    }, [option]);
+        createTables();
+        establishConnectionWithFirebase();
+        setIsLoading(false);
+    }, []);
 
     async function createTables() {
         try {
@@ -65,61 +61,62 @@ export default function Index() {
         }
     }
 
-    async function getDataFromDatabase() {
-        try {
-            const snapshot = await firestore()
-                .collection("TabelaRemedios")
-                .get();
-
-            let compartmentsData = snapshot.docs.map((doc) => {
-                const data = doc.data();
-                return {
-                    id: Number(data.compartimento),
-                    medicineName: data.nome || "",
-                    date_expected: data.dia_previsto || "",
-                    time_expected: data.horario_previsto || "",
-                    date_taken: data.dia_tomado || "",
-                    time_taken: data.horario_tomado || "",
-                };
-            });
-
-            compartmentsData = compartmentsData.sort((a, b) => a.id - b.id);
-
-            const now = dayjs();
-
-            let found = false;
-            for (let i = 1; i <= 14; i++) {
-                if (found) {
-                    break;
-                }
-                compartmentsData.forEach((compartmentData) => {
-                    if (found) {
-                        return;
-                    }
-
-                    if (compartmentData.id === i) {
-                        if (
-                            !compartmentData.date_taken &&
-                            !compartmentData.time_taken &&
-                            compartmentData.date_expected &&
-                            compartmentData.time_expected
-                        ) {
-                            if (!found) {
-                                setNextMedicine(compartmentData.medicineName);
-                                setNextHour(compartmentData.time_expected);
-                                setNextDay(compartmentData.date_expected);
-                                found = true;
-                            }
-                        }
+    function establishConnectionWithFirebase() {
+        firestore()
+            .collection("TabelaRemedios")
+            .onSnapshot((snapshot) => {
+                const sortedDocs = snapshot.docs.sort((a, b) => {
+                    return (
+                        parseInt(a.data().compartimento) -
+                        parseInt(b.data().compartimento)
+                    );
+                });
+                let foundNextMedicine = false;
+                sortedDocs.forEach((doc) => {
+                    const medicine = doc.data();
+                    if (
+                        !foundNextMedicine &&
+                        !medicine["horario_tomado"] &&
+                        medicine["horario_previsto"]
+                    ) {
+                        setNextMedicine(medicine["nome"]);
+                        setNextDay(medicine["dia_previsto"]);
+                        setNextHour(medicine["horario_previsto"]);
+                        foundNextMedicine = true;
                     }
                 });
-            }
 
-            setIsLoading(false);
-        } catch (e) {
-            console.log("Error fetching data:", e);
-            setIsLoading(false);
-        }
+                if (foundNextMedicine) {
+                    const [day, month, year] = nextDay.split("/").map(Number);
+                    const [hours, minutes] = nextHour.split(":").map(Number);
+
+                    const triggerDate = new Date(
+                        year,
+                        month - 1,
+                        day,
+                        hours,
+                        minutes
+                    );
+    
+                    const adjustedTriggerDate = new Date(triggerDate.getTime() - 3 * 60 * 60 * 1000);
+    
+                    const now = new Date();
+                    const currentTime = new Date(now.getTime() - 3 * 60 * 60 * 1000);
+    
+                    if (adjustedTriggerDate > currentTime) {
+                        console.log("Scheduling notification for ", triggerDate)
+                        ExpoNotifications.scheduleNotificationAsync({
+                            content: {
+                                title: "Hora de tomar remédio!",
+                                body: `Está na hora de tomar ${nextMedicine}.`,
+                            },
+                            trigger: {
+                                date: triggerDate,
+                            },
+                        });
+                    }
+                }
+            });
     }
 
     if (isLoading) {
@@ -262,6 +259,6 @@ const styles = StyleSheet.create({
         margin: "auto",
     },
     navButtons: {
-        width: "25%"
-    }
+        width: "25%",
+    },
 });

@@ -246,7 +246,7 @@ export function Settings() {
                                 variant="secondary"
                                 style={styles.deleteButton}
                             >
-                                <Trash size={20} color={colors.neutral[600]} />
+                                <Trash size={20} color={colors.neutral[50]} />
                             </Button>
                         </View>
                         <Text style={styles.compartmentText}>

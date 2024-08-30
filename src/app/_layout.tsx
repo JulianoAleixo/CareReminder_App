@@ -19,8 +19,8 @@ import { Loading } from "@/components/loading"
 ExpoNotifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: true, 
+    shouldPlaySound: false,
+    shouldSetBadge: false, 
   }),
 });
 
@@ -37,25 +37,15 @@ export default function Layout() {
         permissionsToSendPushNotifications =
           await ExpoNotifications.requestPermissionsAsync();
     }
-
-    ExpoNotifications.scheduleNotificationAsync({
-      content: {
-        body: "Uma notificação",
-        title: "Tuuufooooo",
-      },
-      trigger: {
-        seconds: 10
-      }
-    })
-  }
-
-  if (!fontsLoaded) {
-    return <Loading />
   }
 
   useEffect(() => {
     requestNotificationPermission()
   }, [])
+
+  if (!fontsLoaded) {
+    return <Loading />
+  }
 
   return (
     <View style={styles.container}>
