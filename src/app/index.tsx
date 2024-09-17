@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
 import { Text, View, StyleSheet } from "react-native";
 import {
-    Bell,
     House,
-    CalendarRange,
     Settings as SettingsIcon,
+    BriefcaseMedical,
 } from "lucide-react-native";
 import { Button } from "@/components/button";
 import { colors } from "@/styles/colors";
@@ -103,7 +102,8 @@ export default function Index() {
                     const now = new Date();
                     const currentTime = new Date(now.getTime() - 3 * 60 * 60 * 1000);
     
-                    if (adjustedTriggerDate > currentTime) {
+                    console.log(adjustedTriggerDate >= currentTime);
+                    if (adjustedTriggerDate >= currentTime) {
                         console.log("Scheduling notification for ", triggerDate)
                         ExpoNotifications.scheduleNotificationAsync({
                             content: {
@@ -132,7 +132,7 @@ export default function Index() {
             {/* Header */}
             <View style={styles.header}>
                 <Text style={styles.headerText}>CareReminder</Text>
-                <Bell color={colors.neutral[200]} size={24} />
+                <BriefcaseMedical color={colors.neutral[200]} size={36} />
             </View>
 
             {/* Content */}
@@ -162,27 +162,11 @@ export default function Index() {
                             color={
                                 option === "home"
                                     ? colors.neutral[700]
-                                    : colors.sky[100]
+                                    : colors.blue[100]
                             }
                             size={30}
                         />
-                        {/* <Button.Title>Home</Button.Title> */}
-                    </Button>
-
-                    <Button
-                        onPress={() => setOption("history")}
-                        variant={option === "history" ? "secondary" : "primary"}
-                        style={styles.navButtons}
-                    >
-                        <CalendarRange
-                            color={
-                                option === "history"
-                                    ? colors.neutral[700]
-                                    : colors.sky[100]
-                            }
-                            size={30}
-                        />
-                        {/* <Button.Title>Histórico</Button.Title> */}
+                        <Button.Title>Home</Button.Title>
                     </Button>
 
                     <Button
@@ -196,11 +180,11 @@ export default function Index() {
                             color={
                                 option === "settings"
                                     ? colors.neutral[700]
-                                    : colors.sky[100]
+                                    : colors.blue[100]
                             }
                             size={30}
                         />
-                        {/* <Button.Title>Configuração</Button.Title> */}
+                        <Button.Title>Configuração</Button.Title>
                     </Button>
                 </View>
             </View>
@@ -208,7 +192,7 @@ export default function Index() {
     );
 }
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create({ 
     container: {
         flex: 1,
         paddingTop: 64,

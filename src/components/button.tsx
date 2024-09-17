@@ -26,17 +26,17 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 8,
     gap: 4,
-    flex: 0, 
+    flex: 1, 
     flexShrink: 0, 
   },
   primaryButton: {
-    backgroundColor: "#0ea5e9", // bg-sky-500
+    backgroundColor: "#3b82f6", // bg-blue-500
   },
   secondaryButton: {
     backgroundColor: "#d4d4d4", // bg-neutral-300
   },
   primaryText: {
-    color: "#e0f2fe", // text-sky-100
+    color: "#eafedb", // text-blue-100
   },
   secondaryText: {
     color: "#404040", // text-neutral-700
